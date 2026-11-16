@@ -1,0 +1,3 @@
+name: loop-ops
+runtime: nodejs
+description: The agent that looks after loop-app, declared as code.

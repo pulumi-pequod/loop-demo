@@ -1,0 +1,5 @@
+# Credentials come from ESC via OIDC; nothing secret in the repo.
+environment:
+  - aws-login/loop-demo
+config:
+  aws:region: us-west-2

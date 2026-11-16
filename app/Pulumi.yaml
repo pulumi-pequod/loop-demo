@@ -1,0 +1,3 @@
+name: loop-app
+runtime: nodejs
+description: A small HTTP service. One stack per environment (dev, staging, prod).
