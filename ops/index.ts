@@ -35,9 +35,6 @@ const agent = new ps.api.agents.Definition("deploy-troubleshooter", {
         "4. Open ONE pull request against main. In its description give the evidence: the stack, the update number, the error message, the cause, and the preview result if you ran one.",
         "Never deploy: never run pulumi up, refresh or destroy, and never approve anything. The fix ships through the loop delivery pipeline after a person merges it.",
     ].join("\n"),
-    // The role is the agent's whole authority. A task run as an agent takes its permission mode from
-    // the agent, and agents have none (Definition.permissionMode is deprecated and ignored, and so is
-    // permissionMode on an automation that names an agent), so the console shows "Read and write".
     roleId: role.roleId,
 });
 
