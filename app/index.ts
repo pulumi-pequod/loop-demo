@@ -31,6 +31,8 @@ const fn = new aws.lambda.Function(name, {
     runtime: aws.lambda.Runtime.NodeJS22dX,
     handler: "index.handler",
     role: role.arn,
+    // Provisioned concurrency needs a published version; unpublished functions report "$LATEST".
+    publish: true,
     code: new pulumi.asset.AssetArchive({
         "index.mjs": new pulumi.asset.StringAsset(
             `export const handler = async () => ({ statusCode: 200, body: JSON.stringify({ ok: true, env: "${env}" }) });`,
