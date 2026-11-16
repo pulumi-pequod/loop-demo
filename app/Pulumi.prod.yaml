@@ -1,3 +1,0 @@
-# Credentials come from ESC (OIDC into the pequod demo AWS account); nothing secret in the repo.
-environment:
-  - cloud-access/aws-access
