@@ -1,5 +1,3 @@
-# Credentials come from ESC via OIDC; nothing secret in the repo.
+# Credentials come from ESC (OIDC into the pequod demo AWS account); nothing secret in the repo.
 environment:
-  - aws-login/loop-demo
-config:
-  aws:region: us-west-2
+  - cloud-access/aws-access

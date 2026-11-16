@@ -1,7 +1,7 @@
 import * as delivery from "@pulumi/delivery";
 
-const ORG_REPO = process.env.DEMO_REPO ?? "adamgordonbell/full-loop-demo"; // TODO: real repo
-const APPROVERS = ["adamgordonbell"];                             // TODO: user or team
+const ORG_REPO = process.env.DEMO_REPO ?? "pulumi-pequod/loop-demo"; // TODO: real repo
+const APPROVERS = ["v-adam-pulumi-corp"];                             // TODO: user or team
 
 const repo = new delivery.GitHubSource("repo", {
     repository: ORG_REPO,
