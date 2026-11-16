@@ -37,6 +37,8 @@ const fn = new aws.lambda.Function(name, {
         ),
     }),
     ...(tuning ? { memorySize: tuning.memorySize } : {}),
+    // Provisioned concurrency needs a published version; unpublished functions report "$LATEST".
+    publish: !!tuning,
 }, { dependsOn: [logs] });
 
 if (tuning) {
