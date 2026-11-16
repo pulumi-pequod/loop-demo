@@ -3,15 +3,22 @@ import * as ps from "@pulumi/pulumiservice";
 
 const org = pulumi.getOrganization();
 
-// Least privilege: the agent can read stacks, their update logs and state, and search resources.
+// The ESC environment loop-app's stacks import for AWS credentials. Opening it lets the agent run
+// `pulumi preview` to check a fix. Opening an environment is not deploying: without stack:write
+// the role still cannot run `pulumi up`.
+const awsAccess = ps.getEnvironmentOutput({ organizationName: org, projectName: "cloud-access", name: "aws-access" });
+
+// Least privilege: the agent can read stacks, their update logs and state, search resources,
+// and open the one environment loop-app needs for a preview.
 // It cannot deploy and it cannot approve. Widening this takes a pull request.
 const role = new ps.OrganizationRole("loop-troubleshooter-role", {
     organizationName: org,
     name: "loop-deploy-troubleshooter",
-    description: "Read stacks, their history and state, and search resources. No deploy, no approve.",
+    description: "Read stacks, their history and state, search resources, open cloud-access/aws-access for previews. No deploy, no approve.",
     permissions: ps.buildRolePermissionsOutput({
         organizationScopes: ["resources:search"],
         stackRules: [{ all: true, scopes: ["stack:read", "stack:export"] }],
+        environmentRules: [{ id: awsAccess.environmentId, scopes: ["environment:read", "environment:open"] }],
     }).permissions,
 });
 
@@ -22,12 +29,15 @@ const agent = new ps.api.agents.Definition("deploy-troubleshooter", {
     purpose: "When a loop-app update fails, find the root cause and propose the fix as a pull request",
     customInstructions: [
         "You are started when an update to a loop-app stack fails.",
-        "Read the failed update's log and the stack's recent history, then read the Pulumi program in app/ of pulumi-pequod/loop-demo.",
-        "Find the root cause: the exact line of code and why the cloud provider rejected it.",
-        "Open ONE pull request against main with the smallest change that fixes it.",
-        "In the pull request description, give the evidence: the stack, the update number, the error message, and the cause.",
-        "Never deploy, never run pulumi up, and never approve anything. The fix ships through the loop delivery pipeline after a person merges it.",
+        "1. Read the failed update's log, then read the Pulumi program in app/ of pulumi-pequod/loop-demo.",
+        "2. Find the root cause: the exact line of code and why the cloud provider rejected it.",
+        "3. Make the smallest change that fixes it. You may run `pulumi preview` on the failed stack to confirm the fix.",
+        "4. Open ONE pull request against main. In its description give the evidence: the stack, the update number, the error message, the cause, and the preview result if you ran one.",
+        "Never deploy: never run pulumi up, refresh or destroy, and never approve anything. The fix ships through the loop delivery pipeline after a person merges it.",
     ].join("\n"),
+    // The role is the agent's whole authority. A task run as an agent takes its permission mode from
+    // the agent, and agents have none (Definition.permissionMode is deprecated and ignored, and so is
+    // permissionMode on an automation that names an agent), so the console shows "Read and write".
     roleId: role.roleId,
 });
 
