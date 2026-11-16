@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
-const env = pulumi.getStack(); // dev | staging | prod
+const env = pulumi.getStack(); // dev | staging | prod-us | prod-eu
 const name = `loop-api-${env}`;
 
 const role = new aws.iam.Role(`${name}-role`, {
@@ -12,10 +12,9 @@ new aws.iam.RolePolicyAttachment(`${name}-logs`, {
     policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
 });
 
-// SEEDED GAP (on purpose, for the video): no retentionInDays, so logs are kept forever.
-// The agent's review finds this and opens the PR that adds retention.
 const logs = new aws.cloudwatch.LogGroup(`${name}-logs`, {
     name: `/aws/lambda/${name}`,
+    retentionInDays: 14,
 });
 
 const fn = new aws.lambda.Function(name, {

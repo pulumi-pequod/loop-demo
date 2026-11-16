@@ -1,0 +1,6 @@
+# Credentials come from ESC (OIDC into the pequod demo AWS account); nothing secret in the repo.
+environment:
+  - cloud-access/aws-access
+config:
+  aws:region: eu-west-1
+  aws-native:region: eu-west-1
